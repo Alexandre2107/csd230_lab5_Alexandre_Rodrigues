@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<!-- chatgpt prompt: show a thymeleaf template for a simple ecommerce website-->
+<!--https://www.baeldung.com/spring-thymeleaf-css-js-->
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Simple E-Commerce</title>
+  <link href="/styles/main.css" rel="stylesheet"/>
+</head>
+<body>
+<header>
+  <h4><b>csd203 Lab 2</b></h4>
+  <h1>Welcome to Simple E-Commerce</h1>
+  <nav>
+    <a href="/">Home</a> |
+    <a href="/books">Books</a> |
+    <a href="/magazines">Magazines</a> |
+    <a href="/discMags">Disc Mag</a> |
+    <a href="/tickets">Ticket</a> |
+    <a href="/cart">Cart</a>
+
+    <form th:action="@{/logout}" method="post">
+      <input type="submit" value="Sign Out"/>
+    </form>
+  </nav>
+</header>
+
+<main>
+</main>
+
+<footer>
+  <p>&copy; 2024 Simple E-Commerce. All rights reserved.</p>
+  <P>Im here</P>
+</footer>
+</body>
+</html>

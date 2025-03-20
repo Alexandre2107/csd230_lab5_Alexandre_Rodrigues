@@ -1,0 +1,14 @@
+Index: src/main/resources/templates/discMags.html
+===================================================================
+diff --git a/src/main/resources/templates/discMags.html b/src/main/resources/templates/discMags.html
+--- a/src/main/resources/templates/discMags.html	
++++ b/src/main/resources/templates/discMags.html	
+@@ -16,7 +16,7 @@
+     <nav>
+         <a href="/">Home</a>
+         <a href="/books">Books</a>
+-        <a href="/discMags">Disc Mag</a>
++        <!--<a href="/discMags">Disc Mag</a>-->
+         <a href="/cart">Cart</a>
+         <form th:action="@{/logout}" method="post">
+             <input type="submit" value="Sign Out"/>

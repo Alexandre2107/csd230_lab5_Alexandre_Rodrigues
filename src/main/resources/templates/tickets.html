@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<!-- chatgpt prompt: show a thymeleaf template for a simple ecommerce website-->
+<!--https://www.baeldung.com/spring-thymeleaf-css-js-->
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Simple E-Commerce</title>
+  <link th:href="@{/styles/main.css}" rel="stylesheet"/>
+  <script th:inline="javascript">
+    var nameJs = /*[[${name}]]*/;
+  </script>
+  <script type="text/javascript" th:src="@{/js/action.js}"></script>
+</head>
+<body>
+<header>
+  <h1>Welcome to Simple E-Commerce</h1>
+  <nav>
+    <a href="/">Home</a> |
+    <a href="/books">Books</a> |
+    <a href="/magazines">Magazines</a> |
+    <a href="/discMags">Disc Mag</a> |
+    <a href="/tickets">Ticket</a> |
+    <a href="/cart">Cart</a>
+
+    <form th:action="@{/logout}" method="post">
+      <input type="submit" value="Sign Out"/>
+    </form>
+  </nav>
+</header>
+
+<main>
+  <h2>Tickets</h2>
+  <button type="button" th:onclick="showName(nameJs);">Show Name</button>
+  <p><a href="#" th:href="@{/tickets/add-ticket}">Add new Ticket</a></p>
+  <div class="product-list">
+    <!-- Loop through the products -->
+    <form th:action="@{/cart/add-cart}" method="post">
+      <table border="1" cellpadding="5" cellspacing="0">
+        <tr>
+          <th>ID</th>
+          <th>Ticket Text</th>
+          <th>Description</th>
+            <th>Price</th>
+          <th>Edit</th>
+            <th>Select</th>
+          <th>Delete</th>
+        </tr>
+        <tr th:each="ticket : ${tickets}">
+            <td th:text="${ticket.id}"></td>
+            <td th:text="${ticket.text}"></td>
+          <td th:text="${ticket.description}"></td>
+            <td th:text="${ticket.price}"></td>
+            <td><a th:href="@{/tickets/edit-ticket(id=${ticket.id})}">edit...</a></td>
+            <td><input type="checkbox" th:value="${ticket.id}" name="selectedItems"/></td>
+            <td>
+                <button type="button" th:onclick="'deleteTicket(' + ${ticket.id} + ')'">Delete</button>
+            </td>
+        </tr>
+      </table>
+      <button type="submit">Add to Cart</button>
+    </form>
+  </div>
+</main>
+
+<footer>
+  <p>&copy; 2024 Simple E-Commerce. All rights reserved.</p>
+</footer>
+
+<script>
+  function deleteTicket(bookId) {
+    var form = document.createElement('form');
+    form.method = 'post';
+    form.action = '/tickets/selection';
+
+    var input = document.createElement('input');
+    input.type = 'hidden';
+    input.name = 'selectedItems';
+    input.value = bookId;
+
+    form.appendChild(input);
+    document.body.appendChild(form);
+    form.submit();
+  }
+</script>
+
+</body>
+</html>

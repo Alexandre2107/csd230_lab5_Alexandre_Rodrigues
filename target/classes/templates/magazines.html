@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Simple E-Commerce</title>
+    <link th:href="@{/styles/main.css}" rel="stylesheet"/>
+    <script th:inline="javascript">
+        var nameJs = /*[[${name}]]*/;
+    </script>
+    <script type="text/javascript" th:src="@{/js/action.js}"></script>
+</head>
+<body>
+<header>
+    <h1>Welcome to Simple E-Commerce</h1>
+    <nav>
+        <a href="/">Home</a> |
+        <a href="/books">Books</a> |
+        <a href="/magazines">Magazines</a> |
+        <a href="/discMags">Disc Mag</a> |
+        <a href="/tickets">Ticket</a> |
+        <a href="/cart">Cart</a>
+
+        <form th:action="@{/logout}" method="post">
+            <input type="submit" value="Sign Out"/>
+        </form>
+    </nav>
+</header>
+
+<main>
+    <h2>Magazines</h2>
+    <button type="button" th:onclick="showName(nameJs);">Show Name</button>
+    <p><a href="#" th:href="@{/magazines/add-magazine}">Add new Magazines</a></p>
+    <div class="product-list">
+        <!-- Loop through the products -->
+        <form th:action="@{/cart/add-cart}" method="post">
+            <table border="1" cellpadding="5" cellspacing="0">
+                <tr>
+                    <th>ID</th>
+                    <th>Title</th>
+                    <th>Price</th>
+                    <th>Description</th>
+                    <th>Edit</th>
+                    <th>Select</th>
+                    <th>Delete</th>
+                </tr>
+                <tr th:each="magazine : ${magazines}">
+                    <td th:text="${magazine.id}"></td>
+                    <td th:text="${magazine.title}"></td>
+                    <td th:text="${magazine.price}"></td>
+                    <td th:text="${magazine.description}"></td>
+                    <td><a th:href="@{/magazines/edit-magazine(id=${magazine.id})}">edit...</a></td>
+                    <td><input type="checkbox" th:value="${magazine.id}" name="selectedItems"/></td>
+                    <td>
+                        <button type="button" th:onclick="'deleteMagazine(' + ${magazine.id} + ')'">Delete</button>
+                    </td>
+                </tr>
+            </table>
+            <button type="submit">Add to Cart</button>
+        </form>
+    </div>
+</main>
+
+<footer>
+    <p>&copy; 2024 Simple E-Commerce. All rights reserved.</p>
+</footer>
+
+<script>
+    function deleteMagazine(bookId) {
+        var form = document.createElement('form');
+        form.method = 'post';
+        form.action = '/magazines/selection';
+
+        var input = document.createElement('input');
+        input.type = 'hidden';
+        input.name = 'selectedItems';
+        input.value = bookId;
+
+        form.appendChild(input);
+        document.body.appendChild(form);
+        form.submit();
+    }
+</script>
+
+
+</body>
+</html>
