@@ -1,5 +1,6 @@
 package csd230.lab2.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 
 import java.util.LinkedHashSet;
@@ -7,18 +8,14 @@ import java.util.Set;
 
 @Entity
 @Table(name = "cart")
+@JsonIgnoreProperties({"items"})
 public class Cart {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // linkedhashset for NO duplicate items
-    @OneToMany(mappedBy = "cart", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "cart", cascade = CascadeType.ALL)
     private Set<CartItem> items = new LinkedHashSet<>();
-
-    public Set<CartItem> getItems() {
-        return items;
-    }
 
     public Cart() {
     }
@@ -28,13 +25,22 @@ public class Cart {
         this.items = items;
     }
 
-    public void setItems(Set<CartItem> items) {
-        this.items = items;
+    public Long getId() {
+        return id;
     }
 
     public void setId(Long id) {
         this.id = id;
     }
+
+    public Set<CartItem> getItems() {
+        return items;
+    }
+
+    public void setItems(Set<CartItem> items) {
+        this.items = items;
+    }
+
     public void addItem(CartItem item) {
         item.setCart(this);
         items.add(item);
@@ -42,12 +48,8 @@ public class Cart {
 
     public void removeItem(CartItem item) {
         item.setCart(null);
-        item.setId(null);
-        this.items.remove(item);
-
+        items.remove(item);
     }
 
-    public Long getId() {
-        return id;
-    }
+
 }

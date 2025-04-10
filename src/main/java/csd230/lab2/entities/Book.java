@@ -1,7 +1,9 @@
 package csd230.lab2.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.ManyToOne;
 
 @Entity
 public class Book extends Publication {
@@ -35,5 +37,4 @@ public class Book extends Publication {
     public void setIsbn(String isbn) {
         this.isbn = isbn;
     }
-
 }

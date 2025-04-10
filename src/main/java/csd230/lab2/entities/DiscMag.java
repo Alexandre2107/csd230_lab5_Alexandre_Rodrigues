@@ -1,7 +1,9 @@
 package csd230.lab2.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.ManyToOne;
 
 @Entity
 public class DiscMag extends Publication {
@@ -17,7 +19,7 @@ public class DiscMag extends Publication {
     }
 
     public DiscMag() {
-        hasDisc=false;
+        hasDisc = false;
     }
 
     public DiscMag(boolean hasDisc) {

@@ -1,41 +1,34 @@
 import React, { useState, useEffect } from 'react';
+import { Card, CardContent, Typography, Button } from '@mui/material';
 import axios from 'axios';
 
-function DiscMagDetail({ discMagId }) {
+function DiscMagDetail({ discMagId, onDiscMagsUpdated }) {
     const [discMag, setDiscMag] = useState(null);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
 
     useEffect(() => {
         const fetchDiscMag = async () => {
             try {
                 const response = await axios.get(`http://localhost:8080/rest/discMag/${discMagId}`);
                 setDiscMag(response.data);
-                setLoading(false);
             } catch (err) {
-                setError(err.message || `Failed to fetch discMag with ID ${discMagId}.`);
-                setLoading(false);
+                console.error('Failed to fetch discMag details:', err);
             }
         };
 
-        if (discMagId) {
-            fetchDiscMag();
-        } else {
-            setLoading(false);
-        }
+        if (discMagId) fetchDiscMag();
     }, [discMagId]);
 
-    if (!discMagId) return <p>Please select a discMag to view details.</p>;
-    if (loading) return <p>Loading discMag details...</p>;
-    if (error) return <p>Error: {error}</p>;
-    if (!discMag) return <p>DiscMag not found.</p>;
+    if (!discMag) return <Typography>Loading discMag details...</Typography>;
 
     return (
-        <div>
-            <h2>{discMag.title}</h2>
-            <p>Has Disc: {discMag.hasDisc ? 'Yes' : 'No'}</p>
-            <p>Description: {discMag.description}</p>
-        </div>
+        <Card>
+            <CardContent>
+                <Typography variant="h5">{discMag.title}</Typography>
+                <Typography variant="h5">{discMag.price}</Typography>
+                <Typography>Has Disc: {discMag.hasDisc ? 'Yes' : 'No'}</Typography>
+                <Typography>Description: {discMag.description}</Typography>
+            </CardContent>
+        </Card>
     );
 }
 

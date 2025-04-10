@@ -1,11 +1,18 @@
-import  { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { TextField, Button, Grid, Typography } from '@mui/material';
 import axios from 'axios';
 
-// --- BookForm Component (Create/Update) ---
 function BookForm({ onSubmit, initialValues }) {
-    const [formData, setFormData] = useState(initialValues || { title: '', author: '', isbn: '' });
+    const [formData, setFormData] = useState({ title: '', author: '', isbn: '', price: '', quantity: '', description: '' });
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [error, setError] = useState(null);
+
+    // Synchronize formData with initialValues when initialValues change
+    useEffect(() => {
+        if (initialValues) {
+            setFormData(initialValues);
+        }
+    }, [initialValues]);
 
     const handleChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -20,9 +27,9 @@ function BookForm({ onSubmit, initialValues }) {
             const url = initialValues?.id ? `http://localhost:8080/rest/book/${initialValues.id}` : 'http://localhost:8080/rest/book';
             const method = initialValues?.id ? 'put' : 'post';
 
-            const response = await axios[method](url, formData); // Use axios.post or axios.put dynamically
-            onSubmit(response.data); // Call the parent component's onSubmit function
-            setFormData({ title: '', author: '', isbn: '' }); // Clear form after successful submission
+            const response = await axios[method](url, formData);
+            onSubmit(response.data);
+            setFormData({ title: '', author: '', isbn: '', price: '', quantity: '', description: '' });
         } catch (err) {
             setError(err.message || 'Failed to submit book.');
         } finally {
@@ -32,22 +39,76 @@ function BookForm({ onSubmit, initialValues }) {
 
     return (
         <form onSubmit={handleSubmit}>
-            {error && <p style={{ color: 'red' }}>Error: {error}</p>}
-            <div>
-                <label htmlFor="title">Title:</label>
-                <input type="text" id="title" name="title" value={formData.title} onChange={handleChange} />
-            </div>
-            <div>
-                <label htmlFor="author">Author:</label>
-                <input type="text" id="author" name="author" value={formData.author} onChange={handleChange} />
-            </div>
-            <div>
-                <label htmlFor="isbn">ISBN:</label>
-                <input type="text" id="isbn" name="isbn" value={formData.isbn} onChange={handleChange} />
-            </div>
-            <button type="submit" disabled={isSubmitting}>
-                {isSubmitting ? 'Submitting...' : initialValues ? 'Update Book' : 'Add Book'}
-            </button>
+            <Typography variant="h6" gutterBottom>
+                {initialValues ? 'Edit Book' : 'Add Book'}
+            </Typography>
+            {error && <Typography color="error">{error}</Typography>}
+            <Grid container spacing={2}>
+                <Grid item xs={12} sm={6}>
+                    <TextField
+                        label="Title"
+                        name="title"
+                        value={formData.title}
+                        onChange={handleChange}
+                        fullWidth
+                        required
+                    />
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                    <TextField
+                        label="Author"
+                        name="author"
+                        value={formData.author}
+                        onChange={handleChange}
+                        fullWidth
+                        required
+                    />
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                    <TextField
+                        label="ISBN"
+                        name="isbn"
+                        value={formData.isbn}
+                        onChange={handleChange}
+                        fullWidth
+                    />
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                    <TextField
+                        label="Price"
+                        name="price"
+                        type="number"
+                        value={formData.price}
+                        onChange={handleChange}
+                        fullWidth
+                        required
+                    />
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                    <TextField
+                        label="Quantity"
+                        name="quantity"
+                        type="number"
+                        value={formData.quantity}
+                        onChange={handleChange}
+                        fullWidth
+                        required
+                    />
+                </Grid>
+                <Grid item xs={12}>
+                    <Button
+                        type="submit"
+                        variant="contained"
+                        color="primary"
+                        fullWidth
+                        disabled={isSubmitting}
+                    >
+                        {isSubmitting ? 'Submitting...' : initialValues ? 'Update Book' : 'Add Book'}
+                    </Button>
+                </Grid>
+            </Grid>
         </form>
     );
-} export default BookForm;
+}
+
+export default BookForm;

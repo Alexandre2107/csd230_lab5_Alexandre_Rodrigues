@@ -1,43 +1,80 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { Grid, Typography } from '@mui/material';
 import MagazineList from './MagazineList.jsx';
-import MagazineForm from './MagazineForm.jsx';
 import MagazineDetail from './MagazineDetail.jsx';
-import DeleteMagazine from './DeleteMagazine.jsx';
+import MagazineForm from './MagazineForm.jsx';
+import axios from 'axios';
 
 function Magazine() {
     const [selectedMagazineId, setSelectedMagazineId] = useState(null);
+    const [selectedMagazine, setSelectedMagazine] = useState(null);
     const [magazinesUpdated, setMagazinesUpdated] = useState(false);
+    const [loading, setLoading] = useState(false);
 
     const handleMagazineSelect = (id) => {
         setSelectedMagazineId(id);
     };
 
-    const handleMagazineSubmit = (newMagazine) => {
+    const handleMagazinesUpdated = () => {
         setMagazinesUpdated(!magazinesUpdated);
+        setSelectedMagazineId(null);
     };
 
-    const handleMagazineDelete = () => {
-        setSelectedMagazineId(null);
-        setMagazinesUpdated(!magazinesUpdated);
-    };
+    useEffect(() => {
+        const fetchSelectedMagazine = async () => {
+            if (selectedMagazineId) {
+                setLoading(true);
+                try {
+                    const response = await axios.get(`http://localhost:8080/rest/magazine/${selectedMagazineId}`);
+                    setSelectedMagazine(response.data);
+                } catch (err) {
+                    console.error('Failed to fetch selected magazine:', err);
+                } finally {
+                    setLoading(false);
+                }
+            } else {
+                setSelectedMagazine(null);
+            }
+        };
+
+        fetchSelectedMagazine();
+    }, [selectedMagazineId]);
 
     return (
-        <div>
-            <h1>Magazine Management</h1>
-            <div style={{ display: 'flex' }}>
-                <div style={{ width: '300px', marginRight: '20px' }}>
-                    <h2>Magazine List</h2>
-                    <MagazineList key={magazinesUpdated} onSelect={handleMagazineSelect} />
-                </div>
-                <div style={{ width: '400px', marginRight: '20px' }}>
-                    <h2>Magazine Details</h2>
-                    <MagazineDetail magazineId={selectedMagazineId} />
-                    {selectedMagazineId && <DeleteMagazine magazineId={selectedMagazineId} onDelete={handleMagazineDelete} />}
-                </div>
-                <div style={{ width: '400px' }}>
-                    <h2>Add/Update Magazine</h2>
-                    <MagazineForm onSubmit={handleMagazineSubmit} initialValues={selectedMagazineId ? { id: selectedMagazineId } : null} />
-                </div>
+        <div style={{ padding: '20px' }}>
+            <Typography variant="h4" gutterBottom>
+                Magazine Management
+            </Typography>
+            <Grid container spacing={3}>
+                <Grid item xs={12} md={4}>
+                    <Typography variant="h6">Magazine List</Typography>
+                    <MagazineList onSelect={handleMagazineSelect} magazinesUpdated={magazinesUpdated} />
+                </Grid>
+                <Grid item xs={12} md={8}>
+                    {selectedMagazineId ? (
+                        <>
+                            <Typography variant="h6">Magazine Details</Typography>
+                            {loading ? (
+                                <Typography>Loading...</Typography>
+                            ) : (
+                                <MagazineDetail magazineId={selectedMagazineId} onMagazinesUpdated={handleMagazinesUpdated} />
+                            )}
+                            <Typography variant="h6" style={{ marginTop: '20px' }}>
+                                Edit Magazine
+                            </Typography>
+                            <MagazineForm
+                                initialValues={selectedMagazine}
+                                onSubmit={handleMagazinesUpdated}
+                            />
+                        </>
+                    ) : (
+                        <Typography variant="body1">Select a magazine to view details or edit.</Typography>
+                    )}
+                </Grid>
+            </Grid>
+            <div style={{ marginTop: '20px' }}>
+                <Typography variant="h6">Add New Magazine</Typography>
+                <MagazineForm onSubmit={handleMagazinesUpdated} />
             </div>
         </div>
     );

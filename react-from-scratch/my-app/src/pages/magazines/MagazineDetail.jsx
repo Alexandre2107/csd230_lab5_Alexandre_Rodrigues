@@ -1,41 +1,34 @@
 import React, { useState, useEffect } from 'react';
+import { Card, CardContent, Typography, Button } from '@mui/material';
 import axios from 'axios';
 
-function MagazineDetail({ magazineId }) {
+function MagazineDetail({ magazineId, onMagazinesUpdated }) {
     const [magazine, setMagazine] = useState(null);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
 
     useEffect(() => {
         const fetchMagazine = async () => {
             try {
                 const response = await axios.get(`http://localhost:8080/rest/magazine/${magazineId}`);
                 setMagazine(response.data);
-                setLoading(false);
             } catch (err) {
-                setError(err.message || `Failed to fetch magazine with ID ${magazineId}.`);
-                setLoading(false);
+                console.error('Failed to fetch magazine details:', err);
             }
         };
 
-        if (magazineId) {
-            fetchMagazine();
-        } else {
-            setLoading(false);
-        }
+        if (magazineId) fetchMagazine();
     }, [magazineId]);
 
-    if (!magazineId) return <p>Please select a magazine to view details.</p>;
-    if (loading) return <p>Loading magazine details...</p>;
-    if (error) return <p>Error: {error}</p>;
-    if (!magazine) return <p>Magazine not found.</p>;
+    if (!magazine) return <Typography>Loading magazine details...</Typography>;
 
     return (
-        <div>
-            <h2>{magazine.title}</h2>
-            <p>Current Issue: {magazine.currIssue}</p>
-            <p>Description: {magazine.description}</p>
-        </div>
+        <Card>
+            <CardContent>
+                <Typography variant="h5">{magazine.title}</Typography>
+                <Typography>Price: ${magazine.price}</Typography>
+                <Typography>Quantity: {magazine.quantity}</Typography>
+                <Typography>Description: {magazine.description}</Typography>
+            </CardContent>
+        </Card>
     );
 }
 

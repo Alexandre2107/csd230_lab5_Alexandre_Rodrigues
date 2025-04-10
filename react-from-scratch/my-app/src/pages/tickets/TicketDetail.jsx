@@ -1,42 +1,34 @@
 import React, { useState, useEffect } from 'react';
+import { Card, CardContent, Typography } from '@mui/material';
 import axios from 'axios';
 
-function TicketDetail({ ticketId }) {
+function TicketDetail({ ticketId, onTicketsUpdated }) {
     const [ticket, setTicket] = useState(null);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
 
     useEffect(() => {
         const fetchTicket = async () => {
             try {
                 const response = await axios.get(`http://localhost:8080/rest/ticket/${ticketId}`);
                 setTicket(response.data);
-                setLoading(false);
             } catch (err) {
-                setError(err.message || `Failed to fetch ticket with ID ${ticketId}.`);
-                setLoading(false);
+                console.error('Failed to fetch ticket details:', err);
             }
         };
 
-        if (ticketId) {
-            fetchTicket();
-        } else {
-            setLoading(false);
-        }
+        if (ticketId) fetchTicket();
     }, [ticketId]);
 
-    if (!ticketId) return <p>Please select a ticket to view details.</p>;
-    if (loading) return <p>Loading ticket details...</p>;
-    if (error) return <p>Error: {error}</p>;
-    if (!ticket) return <p>Ticket not found.</p>;
+    if (!ticket) return <Typography>Loading ticket details...</Typography>;
 
     return (
-        <div>
-            <h2>{ticket.text}</h2>
-            <p>Price: {ticket.price}</p>
-            <p>Quantity: {ticket.quantity}</p>
-            <p>Description: {ticket.description}</p>
-        </div>
+        <Card>
+            <CardContent>
+                <Typography variant="h5">{ticket.text}</Typography>
+                <Typography>Price: ${ticket.price}</Typography>
+                <Typography>Quantity: {ticket.quantity}</Typography>
+                <Typography>Description: {ticket.description}</Typography>
+            </CardContent>
+        </Card>
     );
 }
 

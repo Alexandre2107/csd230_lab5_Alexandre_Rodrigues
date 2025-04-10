@@ -1,10 +1,17 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { TextField, Button, Grid, Typography } from '@mui/material';
 import axios from 'axios';
 
 function MagazineForm({ onSubmit, initialValues }) {
-    const [formData, setFormData] = useState(initialValues || { title: '', currIssue: '', description: '' });
+    const [formData, setFormData] = useState({ title: '', currIssue: '', price: '', quantity: '', description: '' });
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [error, setError] = useState(null);
+
+    useEffect(() => {
+        if (initialValues) {
+            setFormData(initialValues);
+        }
+    }, [initialValues]);
 
     const handleChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -21,7 +28,7 @@ function MagazineForm({ onSubmit, initialValues }) {
 
             const response = await axios[method](url, formData);
             onSubmit(response.data);
-            setFormData({ title: '', currIssue: '', description: '' });
+            setFormData({ title: '', currIssue: '', price: '', quantity: '', description: '' });
         } catch (err) {
             setError(err.message || 'Failed to submit magazine.');
         } finally {
@@ -31,22 +38,55 @@ function MagazineForm({ onSubmit, initialValues }) {
 
     return (
         <form onSubmit={handleSubmit}>
-            {error && <p style={{ color: 'red' }}>Error: {error}</p>}
-            <div>
-                <label htmlFor="title">Title:</label>
-                <input type="text" id="title" name="title" value={formData.title} onChange={handleChange} />
-            </div>
-            <div>
-                <label htmlFor="currIssue">Current Issue:</label>
-                <input type="text" id="currIssue" name="currIssue" value={formData.currIssue} onChange={handleChange} />
-            </div>
-            <div>
-                <label htmlFor="description">Description:</label>
-                <input type="text" id="description" name="description" value={formData.description} onChange={handleChange} />
-            </div>
-            <button type="submit" disabled={isSubmitting}>
-                {isSubmitting ? 'Submitting...' : initialValues ? 'Update Magazine' : 'Add Magazine'}
-            </button>
+            <Typography variant="h6" gutterBottom>
+                {initialValues ? 'Edit Magazine' : 'Add Magazine'}
+            </Typography>
+            {error && <Typography color="error">{error}</Typography>}
+            <Grid container spacing={2}>
+                <Grid item xs={12} sm={6}>
+                    <TextField
+                        label="Title"
+                        name="title"
+                        value={formData.title}
+                        onChange={handleChange}
+                        fullWidth
+                        required
+                    />
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                    <TextField
+                        label="Price"
+                        name="price"
+                        type="number"
+                        value={formData.price}
+                        onChange={handleChange}
+                        fullWidth
+                        required
+                    />
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                    <TextField
+                        label="Quantity"
+                        name="quantity"
+                        type="number"
+                        value={formData.quantity}
+                        onChange={handleChange}
+                        fullWidth
+                        required
+                    />
+                </Grid>
+                <Grid item xs={12}>
+                    <Button
+                        type="submit"
+                        variant="contained"
+                        color="primary"
+                        fullWidth
+                        disabled={isSubmitting}
+                    >
+                        {isSubmitting ? 'Submitting...' : initialValues ? 'Update Magazine' : 'Add Magazine'}
+                    </Button>
+                </Grid>
+            </Grid>
         </form>
     );
 }

@@ -1,42 +1,36 @@
 import React, { useState, useEffect } from 'react';
+import { Card, CardContent, Typography, Button } from '@mui/material';
 import axios from 'axios';
 
-// --- BookDetail Component ---
-function BookDetail({ bookId }) {
+function BookDetail({ bookId, onBooksUpdated }) {
     const [book, setBook] = useState(null);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
 
     useEffect(() => {
         const fetchBook = async () => {
             try {
                 const response = await axios.get(`http://localhost:8080/rest/book/${bookId}`);
                 setBook(response.data);
-                setLoading(false);
             } catch (err) {
-                setError(err.message || `Failed to fetch book with ID ${bookId}.`);
-                setLoading(false);
+                console.error('Failed to fetch book details:', err);
             }
         };
 
-        if (bookId) { // Only fetch if a bookId is provided
-            fetchBook();
-        } else {
-            setLoading(false); // If no bookId, just set loading to false
-        }
-    }, [bookId]); // Effect runs when bookId changes
+        if (bookId) fetchBook();
+    }, [bookId]);
 
-    if (!bookId) return <p>Please select a book to view details.</p>;
-    if (loading) return <p>Loading book details...</p>;
-    if (error) return <p>Error: {error}</p>;
-    if (!book) return <p>Book not found.</p>;
+
+    if (!book) return <Typography>Loading book details...</Typography>;
 
     return (
-        <div>
-            <h2>{book.title}</h2>
-            <p>Author: {book.author}</p>
-            <p>ISBN: {book.isbn}</p>
-        </div>
+        <Card>
+            <CardContent>
+                <Typography variant="h5">{book.title}</Typography>
+                <Typography>Author: {book.author}</Typography>
+                <Typography>Price: ${book.price}</Typography>
+                <Typography>Quantity: {book.quantity}</Typography>
+                <Typography>Description: {book.description}</Typography>
+            </CardContent>
+        </Card>
     );
 }
 

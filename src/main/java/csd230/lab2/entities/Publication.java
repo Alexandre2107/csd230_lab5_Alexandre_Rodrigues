@@ -1,10 +1,18 @@
 package csd230.lab2.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.ManyToOne;
 
 @Entity
 public class Publication extends CartItem {
+    @Column(name = "title")
+    private String title;
+
+    @Column(name = "copies", nullable = true)
+    private int copies;
+
     public Publication() {
     }
 
@@ -13,13 +21,6 @@ public class Publication extends CartItem {
         this.title = title;
         this.copies = copies;
     }
-
-    @Column(name = "title")
-    private String title;
-
-    @Column(name = "copies", nullable = true)
-    private int copies;
-
 
     public String getTitle() {
         return title;
@@ -36,6 +37,4 @@ public class Publication extends CartItem {
     public void setCopies(int copies) {
         this.copies = copies;
     }
-
-
 }

@@ -1,5 +1,6 @@
 package csd230.lab2.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 @Entity
@@ -10,7 +11,6 @@ public class CartItem {
     @Column(name = "id", nullable = false)
     private Long id;
 
-
     @Column(name = "price", nullable = true)
     private double price;
 
@@ -20,8 +20,10 @@ public class CartItem {
     @Column(name = "description")
     private String description;
 
-    @ManyToOne
-    @JoinColumn(name = "cart_id")
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "cart_id", nullable = true)
+    @JsonIgnore
     private Cart cart;
 
     public CartItem() {
@@ -61,8 +63,6 @@ public class CartItem {
         return description;
     }
 
-
-
     public void setDescription(String description) {
         this.description = description;
     }
@@ -74,5 +74,4 @@ public class CartItem {
     public void setCart(Cart cart) {
         this.cart = cart;
     }
-
 }

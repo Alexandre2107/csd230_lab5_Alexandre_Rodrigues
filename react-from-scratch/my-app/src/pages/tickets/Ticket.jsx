@@ -1,8 +1,8 @@
 import { useState } from 'react';
+import { Grid, Typography } from '@mui/material';
 import TicketList from './TicketList.jsx';
-import TicketForm from './TicketForm.jsx';
 import TicketDetail from './TicketDetail.jsx';
-import DeleteTicket from './DeleteTicket.jsx';
+import TicketForm from './TicketForm.jsx';
 
 function Ticket() {
     const [selectedTicketId, setSelectedTicketId] = useState(null);
@@ -12,32 +12,35 @@ function Ticket() {
         setSelectedTicketId(id);
     };
 
-    const handleTicketSubmit = (newTicket) => {
+    const handleTicketsUpdated = () => {
         setTicketsUpdated(!ticketsUpdated);
-    };
-
-    const handleTicketDelete = () => {
-        setSelectedTicketId(null);
-        setTicketsUpdated(!ticketsUpdated);
+        setSelectedTicketId(null); // Reset selected ticket after update
     };
 
     return (
-        <div>
-            <h1>Ticket Management</h1>
-            <div style={{ display: 'flex' }}>
-                <div style={{ width: '300px', marginRight: '20px' }}>
-                    <h2>Ticket List</h2>
-                    <TicketList key={ticketsUpdated} onSelect={handleTicketSelect} />
-                </div>
-                <div style={{ width: '400px', marginRight: '20px' }}>
-                    <h2>Ticket Details</h2>
-                    <TicketDetail ticketId={selectedTicketId} />
-                    {selectedTicketId && <DeleteTicket ticketId={selectedTicketId} onDelete={handleTicketDelete} />}
-                </div>
-                <div style={{ width: '400px' }}>
-                    <h2>Add/Update Ticket</h2>
-                    <TicketForm onSubmit={handleTicketSubmit} initialValues={selectedTicketId ? { id: selectedTicketId } : null} />
-                </div>
+        <div style={{ padding: '20px' }}>
+            <Typography variant="h4" gutterBottom>
+                Ticket Management
+            </Typography>
+            <Grid container spacing={3}>
+                <Grid item xs={12} md={4}>
+                    <Typography variant="h6">Ticket List</Typography>
+                    <TicketList onSelect={handleTicketSelect} ticketsUpdated={ticketsUpdated} />
+                </Grid>
+                <Grid item xs={12} md={8}>
+                    {selectedTicketId ? (
+                        <>
+                            <Typography variant="h6">Ticket Details</Typography>
+                            <TicketDetail ticketId={selectedTicketId} onTicketsUpdated={handleTicketsUpdated} />
+                        </>
+                    ) : (
+                        <Typography variant="body1">Select a ticket to view details.</Typography>
+                    )}
+                </Grid>
+            </Grid>
+            <div style={{ marginTop: '20px' }}>
+                <Typography variant="h6">Add Ticket</Typography>
+                <TicketForm onSubmit={handleTicketsUpdated} />
             </div>
         </div>
     );

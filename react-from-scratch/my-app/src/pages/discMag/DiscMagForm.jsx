@@ -1,15 +1,20 @@
-
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { TextField, Button, Grid, Typography } from '@mui/material';
 import axios from 'axios';
 
 function DiscMagForm({ onSubmit, initialValues }) {
-    const [formData, setFormData] = useState(initialValues || { title: '', hasDisc: false, description: '' });
+    const [formData, setFormData] = useState({ title: '', hasDisc: false, description: '' });
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [error, setError] = useState(null);
 
+    useEffect(() => {
+        if (initialValues) {
+            setFormData(initialValues);
+        }
+    }, [initialValues]);
+
     const handleChange = (e) => {
-        const { name, value, type, checked } = e.target;
-        setFormData({ ...formData, [name]: type === 'checkbox' ? checked : value });
+        setFormData({ ...formData, [e.target.name]: e.target.value,  hasDisc: e.target.name === 'hasDisc' ? e.target.checked : formData.hasDisc });
     };
 
     const handleSubmit = async (e) => {
@@ -23,7 +28,9 @@ function DiscMagForm({ onSubmit, initialValues }) {
 
             const response = await axios[method](url, formData);
             onSubmit(response.data);
-            setFormData({ title: '', hasDisc: false, description: '' });
+
+            // Reset formData, including the price field
+            setFormData({ title: '', hasDisc: false, price: '', description: '' });
         } catch (err) {
             setError(err.message || 'Failed to submit discMag.');
         } finally {
@@ -33,22 +40,52 @@ function DiscMagForm({ onSubmit, initialValues }) {
 
     return (
         <form onSubmit={handleSubmit}>
-            {error && <p style={{ color: 'red' }}>Error: {error}</p>}
-            <div>
-                <label htmlFor="title">Title:</label>
-                <input type="text" id="title" name="title" value={formData.title} onChange={handleChange} />
-            </div>
-            <div>
-                <label htmlFor="hasDisc">Has Disc:</label>
-                <input type="checkbox" id="hasDisc" name="hasDisc" checked={formData.hasDisc} onChange={handleChange} />
-            </div>
-            <div>
-                <label htmlFor="description">Description:</label>
-                <input type="text" id="description" name="description" value={formData.description} onChange={handleChange} />
-            </div>
-            <button type="submit" disabled={isSubmitting}>
-                {isSubmitting ? 'Submitting...' : initialValues ? 'Update DiscMag' : 'Add DiscMag'}
-            </button>
+            <Typography variant="h6" gutterBottom>
+                {initialValues ? 'Edit DiscMag' : 'Add DiscMag'}
+            </Typography>
+            {error && <Typography color="error">{error}</Typography>}
+            <Grid container spacing={2}>
+                <Grid item xs={12}>
+                    <TextField
+                        label="Title"
+                        name="title"
+                        value={formData.title}
+                        onChange={handleChange}
+                        fullWidth
+                        required
+                    />
+                </Grid>
+                <Grid>
+                    <TextField
+                        label="Price"
+                        name="price"
+                        value={formData.price}
+                        onChange={handleChange}
+                        fullWidth
+                        required
+                    />
+                </Grid>
+                <Grid>
+                    <Typography variant="body1">Has Disc</Typography>
+                    <input
+                        type="checkbox"
+                        name="hasDisc"
+                        checked={formData.hasDisc}
+                        onChange={handleChange}
+                    />
+                </Grid>
+                <Grid item xs={12}>
+                    <Button
+                        type="submit"
+                        variant="contained"
+                        color="primary"
+                        fullWidth
+                        disabled={isSubmitting}
+                    >
+                        {isSubmitting ? 'Submitting...' : initialValues ? 'Update DiscMag' : 'Add DiscMag'}
+                    </Button>
+                </Grid>
+            </Grid>
         </form>
     );
 }

@@ -1,10 +1,17 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { TextField, Button, Grid, Typography } from '@mui/material';
 import axios from 'axios';
 
 function TicketForm({ onSubmit, initialValues }) {
-    const [formData, setFormData] = useState(initialValues || { text: '', price: '', quantity: '', description: '' });
+    const [formData, setFormData] = useState({ text: '', price: '', quantity: '', description: '' });
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [error, setError] = useState(null);
+
+    useEffect(() => {
+        if (initialValues) {
+            setFormData(initialValues);
+        }
+    }, [initialValues]);
 
     const handleChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -31,26 +38,55 @@ function TicketForm({ onSubmit, initialValues }) {
 
     return (
         <form onSubmit={handleSubmit}>
-            {error && <p style={{ color: 'red' }}>Error: {error}</p>}
-            <div>
-                <label htmlFor="text">Text:</label>
-                <input type="text" id="text" name="text" value={formData.text} onChange={handleChange} />
-            </div>
-            <div>
-                <label htmlFor="price">Price:</label>
-                <input type="text" id="price" name="price" value={formData.price} onChange={handleChange} />
-            </div>
-            <div>
-                <label htmlFor="quantity">Quantity:</label>
-                <input type="text" id="quantity" name="quantity" value={formData.quantity} onChange={handleChange} />
-            </div>
-            <div>
-                <label htmlFor="description">Description:</label>
-                <input type="text" id="description" name="description" value={formData.description} onChange={handleChange} />
-            </div>
-            <button type="submit" disabled={isSubmitting}>
-                {isSubmitting ? 'Submitting...' : initialValues ? 'Update Ticket' : 'Add Ticket'}
-            </button>
+            <Typography variant="h6" gutterBottom>
+                {initialValues ? 'Edit Ticket' : 'Add Ticket'}
+            </Typography>
+            {error && <Typography color="error">{error}</Typography>}
+            <Grid container spacing={2}>
+                <Grid item xs={12}>
+                    <TextField
+                        label="Text"
+                        name="text"
+                        value={formData.text}
+                        onChange={handleChange}
+                        fullWidth
+                        required
+                    />
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                    <TextField
+                        label="Price"
+                        name="price"
+                        type="number"
+                        value={formData.price}
+                        onChange={handleChange}
+                        fullWidth
+                        required
+                    />
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                    <TextField
+                        label="Quantity"
+                        name="quantity"
+                        type="number"
+                        value={formData.quantity}
+                        onChange={handleChange}
+                        fullWidth
+                        required
+                    />
+                </Grid>
+                <Grid item xs={12}>
+                    <Button
+                        type="submit"
+                        variant="contained"
+                        color="primary"
+                        fullWidth
+                        disabled={isSubmitting}
+                    >
+                        {isSubmitting ? 'Submitting...' : initialValues ? 'Update Ticket' : 'Add Ticket'}
+                    </Button>
+                </Grid>
+            </Grid>
         </form>
     );
 }

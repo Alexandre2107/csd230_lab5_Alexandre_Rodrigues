@@ -1,28 +1,31 @@
 import React, { useState } from 'react';
+import { Button } from '@mui/material';
 import axios from 'axios';
 
 function DeleteTicket({ ticketId, onDelete }) {
     const [isDeleting, setIsDeleting] = useState(false);
-    const [error, setError] = useState(null);
 
     const handleDelete = async () => {
         setIsDeleting(true);
-        setError(null);
-
         try {
             await axios.delete(`http://localhost:8080/rest/ticket/${ticketId}`);
             onDelete();
         } catch (err) {
-            setError(err.message || `Failed to delete ticket with ID ${ticketId}.`);
+            console.error('Failed to delete ticket:', err);
         } finally {
             setIsDeleting(false);
         }
     };
 
     return (
-        <button onClick={handleDelete} disabled={isDeleting}>
+        <Button
+            variant="contained"
+            color="secondary"
+            onClick={handleDelete}
+            disabled={isDeleting}
+        >
             {isDeleting ? 'Deleting...' : 'Delete Ticket'}
-        </button>
+        </Button>
     );
 }
 

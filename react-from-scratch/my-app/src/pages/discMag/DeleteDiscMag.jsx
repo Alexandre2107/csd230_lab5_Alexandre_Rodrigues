@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Button, Typography } from '@mui/material';
 import axios from 'axios';
 
 function DeleteDiscMag({ discMagId, onDelete }) {
@@ -20,9 +21,17 @@ function DeleteDiscMag({ discMagId, onDelete }) {
     };
 
     return (
-        <button onClick={handleDelete} disabled={isDeleting}>
-            {isDeleting ? 'Deleting...' : 'Delete DiscMag'}
-        </button>
+        <div>
+            <Button
+                variant="contained"
+                color="secondary"
+                onClick={handleDelete}
+                disabled={isDeleting}
+            >
+                {isDeleting ? 'Deleting...' : 'Delete DiscMag'}
+            </Button>
+            {error && <Typography color="error">{error}</Typography>}
+        </div>
     );
 }
 

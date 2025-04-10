@@ -20,4 +20,5 @@ public interface CartItemRepository extends JpaRepository<CartItem, Long> {
 
     @Query("SELECT c FROM CartItem c WHERE c.price = :price AND c.quantity = :quantity")
     List<CartItem> findByPriceAndQuantity(@Param("price") Double price, @Param("quantity") Integer quantity);
+
 }
